@@ -1,0 +1,35 @@
+@import "../styles/tokens.css";
+@import "../styles/materials.css";
+@import "../styles/motion.css";
+@import "../styles/components.css";
+@import "../styles/layout.css";
+@import "../styles/home.css";
+@import "../styles/projects.css";
+@import "../styles/component-catalog.css";
+@import "../styles/guides.css";
+@import "../styles/playground.css";
+@import "../styles/system-pages.css";
+@import "tailwindcss";
+
+:root {
+  --background: var(--wc-color-page);
+  --foreground: var(--wc-color-text);
+}
+
+html {
+  background: var(--wc-color-page);
+}
+
+body {
+  min-height: 100svh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--wc-font-sans);
+  font-size: var(--wc-text-body);
+  line-height: var(--wc-leading-body);
+}
+
+:focus-visible {
+  outline: 2px solid var(--wc-color-accent);
+  outline-offset: 3px;
+}

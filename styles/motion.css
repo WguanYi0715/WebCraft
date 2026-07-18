@@ -1,0 +1,66 @@
+:root {
+  --wc-duration-micro: 150ms;
+  --wc-duration-standard: 220ms;
+  --wc-duration-page: 360ms;
+  --wc-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --wc-ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --wc-ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --wc-ease-emphasized: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes wc-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes wc-enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wc-fade-in {
+  animation: wc-fade-in var(--wc-duration-standard) var(--wc-ease-enter) both;
+}
+
+.wc-enter-up {
+  animation: wc-enter-up var(--wc-duration-page) var(--wc-ease-enter) both;
+}
+
+.wc-motion-scale {
+  transition: transform var(--wc-duration-micro) var(--wc-ease-standard);
+}
+
+.wc-motion-scale:active {
+  transform: scale(0.985);
+}
+
+.wc-motion-material {
+  transition:
+    background-color var(--wc-duration-standard) var(--wc-ease-standard),
+    border-color var(--wc-duration-standard) var(--wc-ease-standard),
+    box-shadow var(--wc-duration-standard) var(--wc-ease-standard),
+    transform var(--wc-duration-micro) var(--wc-ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}
