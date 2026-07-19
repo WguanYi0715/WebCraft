@@ -8,7 +8,7 @@ verification-first engineering baseline.
 
 ## Live demo
 
-Live demo: pending public repository connection.
+Live demo: [Open WebCraft](https://web-craft-weld.vercel.app)
 
 ## What WebCraft includes
 
