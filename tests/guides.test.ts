@@ -3,6 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { adaptLocalGuide } from "../features/guides/adapters";
+import { copyCode } from "../features/guides/components/copy-code-button";
 import { expandableComponentCatalogManifest } from "../features/guides/data/manifests/expandable-component-catalog";
 import { reliableNextjsFoundationManifest } from "../features/guides/data/manifests/reliable-nextjs-foundation";
 import { guides } from "../features/guides/data/guides";
@@ -36,7 +37,9 @@ const guideModuleFiles = [
   "features/guides/components/guide-detail.tsx",
   "features/guides/components/guide-metadata.tsx",
   "features/guides/components/guide-section.tsx",
+  "features/guides/components/guide-table-of-contents.tsx",
   "features/guides/components/code-example.tsx",
+  "features/guides/components/copy-code-button.tsx",
   "features/guides/README.md",
   "app/guides/page.tsx",
   "app/guides/[slug]/page.tsx",
@@ -202,11 +205,25 @@ describe("guides module", () => {
       path.join(projectRoot, "features/guides/components/guide-section.tsx"),
       "utf8",
     );
+    const guideDetail = readFileSync(
+      path.join(projectRoot, "features/guides/components/guide-detail.tsx"),
+      "utf8",
+    );
+    const tableOfContents = readFileSync(
+      path.join(projectRoot, "features/guides/components/guide-table-of-contents.tsx"),
+      "utf8",
+    );
 
     expect(detailPage).toContain("generateStaticParams");
     expect(detailPage).toContain("generateMetadata");
     expect(detailPage).toContain("notFound()");
     expect(section).toContain("id={section.id}");
+    expect(guideDetail).toContain("<GuideTableOfContents sections={guide.sections} />");
+    expect(tableOfContents).toContain("<nav");
+    expect(tableOfContents).toContain('aria-label="On this page"');
+    expect(tableOfContents).toContain("sections.map");
+    expect(tableOfContents).toContain("href={`#${section.id}`}");
+    expect(tableOfContents).not.toMatch(/GuideManifest|data\/manifests|const sections = \[/);
     expect(notFoundPage).toContain('href="/guides"');
     expect(notFoundPage).toContain('href="/"');
   });
@@ -235,11 +252,48 @@ describe("guides module", () => {
       path.join(projectRoot, "features/guides/components/code-example.tsx"),
       "utf8",
     );
+    const copyButton = readFileSync(
+      path.join(projectRoot, "features/guides/components/copy-code-button.tsx"),
+      "utf8",
+    );
 
     expect(codeExample).toContain("<pre>");
     expect(codeExample).toContain("<code");
+    expect(codeExample).toContain("<CopyCodeButton code={example.code} />");
     expect(codeExample).not.toContain("dangerouslySetInnerHTML");
     expect(codeExample).not.toMatch(/clipboard|navigator\.|eval\s*\(/i);
+    expect(copyButton).toContain('"use client"');
+    expect(copyButton).toContain("navigator.clipboard");
+    expect(copyButton).toContain("navigator.clipboard;");
+    expect(copyButton).toContain("onClick={handleCopy}");
+    expect(copyButton).toContain("Copied");
+    expect(copyButton).toContain("Copy failed — select the code manually");
+    expect(copyButton).toContain('aria-live="polite"');
+    expect(copyButton).not.toMatch(/fetch\s*\(|dangerouslySetInnerHTML|document\.execCommand|gsap|viewtransition/i);
+  });
+
+  it("copies the exact trusted code or returns an accessible retry state", async () => {
+    const code = getGuideBySlug(reliableNextjsFoundationManifest.slug)?.sections
+      .flatMap((section) => section.codeExamples ?? [])[0]?.code;
+    const writes: string[] = [];
+
+    expect(code).toBeDefined();
+    await expect(
+      copyCode(code!, {
+        writeText: async (value) => {
+          writes.push(value);
+        },
+      }),
+    ).resolves.toBe("success");
+    expect(writes).toEqual([code]);
+    await expect(copyCode(code!, undefined)).resolves.toBe("error");
+    await expect(
+      copyCode(code!, {
+        writeText: async () => {
+          throw new Error("Clipboard permission denied");
+        },
+      }),
+    ).resolves.toBe("error");
   });
 
   it("keeps the Guides runtime local and free of external access", () => {
@@ -263,6 +317,8 @@ describe("guides module", () => {
     expect(styles).not.toMatch(/crystal/i);
     expect(styles).not.toContain("@keyframes");
     expect(styles).toContain("overflow-x: auto");
+    expect(styles).toContain(".guides-table-of-contents");
+    expect(styles).toContain(".guides-code-example__copy-button:focus-visible");
   });
 
   it("keeps Guides alongside the real Playground route", () => {

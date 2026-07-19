@@ -3,6 +3,7 @@ import { Card } from "@/components/ui";
 import type { Guide } from "../types";
 import { GuideMetadata } from "./guide-metadata";
 import { GuideSection } from "./guide-section";
+import { GuideTableOfContents } from "./guide-table-of-contents";
 
 export interface GuideDetailProps {
   guide: Guide;
@@ -18,6 +19,7 @@ export function GuideDetail({ guide }: GuideDetailProps) {
           <p className="guides-detail__summary">{guide.summary}</p>
           <p className="guides-detail__description">{guide.description}</p>
           <GuideMetadata guide={guide} />
+          <GuideTableOfContents sections={guide.sections} />
         </header>
 
         <div className="guides-detail__body">
