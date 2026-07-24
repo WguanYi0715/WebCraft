@@ -8,7 +8,7 @@ verification-first engineering baseline.
 
 ## Live demo
 
-Live demo: [Open WebCraft](https://web-craft-weld.vercel.app)
+Live demo: [Open WebCraft](https://webcraft.guanyilab.com)
 
 ## What WebCraft includes
 
