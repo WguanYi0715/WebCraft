@@ -8,6 +8,7 @@ import { buttonManifest } from "../features/component-catalog/data/manifests/but
 import { cardManifest } from "../features/component-catalog/data/manifests/card";
 import { containerManifest } from "../features/component-catalog/data/manifests/container";
 import { components } from "../features/component-catalog/data/components";
+import { interactiveComponents } from "../features/component-catalog/data/interactive-components";
 import {
   getAllComponents,
   getComponentBySlug,
@@ -39,6 +40,9 @@ const componentCatalogFiles = [
   "features/component-catalog/components/component-preview.tsx",
   "features/component-catalog/components/component-status.tsx",
   "features/component-catalog/components/component-attribute-list.tsx",
+  "features/component-catalog/components/interactive-component-card.tsx",
+  "features/component-catalog/components/interactive-component-preview.tsx",
+  "features/component-catalog/data/interactive-components.ts",
   "features/component-catalog/README.md",
   "app/components/page.tsx",
   "app/components/[slug]/page.tsx",
@@ -235,6 +239,76 @@ describe("component catalog module", () => {
       const source = readFileSync(path.join(projectRoot, filePath), "utf8");
       expect(source).not.toMatch(/\bfetch\s*\(|process\.env|GITHUB_TOKEN|axios|graphql/i);
     }
+  });
+
+  it("defines exactly four complete interactive component demonstrations", () => {
+    expect(interactiveComponents.map((component) => component.slug)).toEqual([
+      "button",
+      "form-field",
+      "switch",
+      "accordion",
+    ]);
+
+    for (const component of interactiveComponents) {
+      expect(component.name).not.toHaveLength(0);
+      expect(component.summary).not.toHaveLength(0);
+      expect(component.states.length).toBeGreaterThan(1);
+      expect(component.usage).not.toHaveLength(0);
+      expect(component.avoid).not.toHaveLength(0);
+      expect(component.accessibility).not.toHaveLength(0);
+      expect(component.code).not.toHaveLength(0);
+    }
+  });
+
+  it("keeps the Components route server-rendered while isolating interactions in a client preview", () => {
+    const page = readFileSync(
+      path.join(projectRoot, "app/components/page.tsx"),
+      "utf8",
+    );
+    const interactivePreview = readFileSync(
+      path.join(
+        projectRoot,
+        "features/component-catalog/components/interactive-component-preview.tsx",
+      ),
+      "utf8",
+    );
+
+    expect(page).not.toContain('"use client"');
+    expect(page).toContain("InteractiveComponentCard");
+    expect(interactivePreview).toContain('"use client"');
+    expect(interactivePreview).toContain("CopyCodeButton");
+    expect(interactivePreview).toContain("Preview preset");
+    expect(interactivePreview).toContain("preview preset");
+    expect(interactivePreview).not.toMatch(/\bfetch\s*\(|process\.env|GITHUB_TOKEN|vercel\.app/i);
+  });
+
+  it("retains semantic interaction contracts for all four interactive previews", () => {
+    const preview = readFileSync(
+      path.join(
+        projectRoot,
+        "features/component-catalog/components/interactive-component-preview.tsx",
+      ),
+      "utf8",
+    );
+    const button = readFileSync(
+      path.join(projectRoot, "components/ui/button.tsx"),
+      "utf8",
+    );
+
+    expect(button).toContain("aria-busy={loading || undefined}");
+    expect(button).toContain("disabled={isDisabled}");
+    expect(preview).toContain("htmlFor={inputId}");
+    expect(preview).toContain('name="project-name"');
+    expect(preview).toContain("aria-invalid={error || undefined}");
+    expect(preview).toContain("aria-describedby={error ? errorId : undefined}");
+    expect(preview).toContain('role="switch"');
+    expect(preview).toContain('type="checkbox"');
+    expect(preview).toContain("<button");
+    expect(preview).toContain("aria-pressed={value === state}");
+    expect(preview).toContain("Preview preset");
+    expect(preview).toContain("aria-expanded={isOpen}");
+    expect(preview).toContain("aria-controls={contentId}");
+    expect(preview).toContain("aria-labelledby={triggerId}");
   });
 
   it("keeps catalog styles token-based and avoids high-emphasis material", () => {

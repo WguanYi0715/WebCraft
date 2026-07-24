@@ -8,7 +8,13 @@ export { ComponentPreview } from "./components/component-preview";
 export type { ComponentPreviewProps } from "./components/component-preview";
 export { ComponentStatus } from "./components/component-status";
 export type { ComponentStatusProps } from "./components/component-status";
+export { InteractiveComponentCard } from "./components/interactive-component-card";
+export type { InteractiveComponentCardProps } from "./components/interactive-component-card";
+export { InteractiveComponentPreview } from "./components/interactive-component-preview";
+export type { InteractiveComponentPreviewProps } from "./components/interactive-component-preview";
 export { components } from "./data/components";
+export { interactiveComponents } from "./data/interactive-components";
+export type { InteractiveComponentDefinition, InteractiveComponentSlug } from "./data/interactive-components";
 export type { Component, ComponentCategory, ComponentStatus as ComponentStatusType } from "./types";
 export {
   getAllComponents,

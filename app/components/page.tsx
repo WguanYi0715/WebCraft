@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui";
-import { ComponentCard, getAllComponents } from "@/features/component-catalog";
+import { interactiveComponents } from "@/features/component-catalog/data/interactive-components";
+import { InteractiveComponentCard } from "@/features/component-catalog/components/interactive-component-card";
 import { createPageMetadata } from "@/lib/site-config";
 
 export const metadata: Metadata = createPageMetadata({
@@ -10,8 +11,7 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function ComponentsPage() {
-  const componentEntries = getAllComponents();
-  const componentCount = componentEntries.length;
+  const componentCount: number = interactiveComponents.length;
 
   return (
     <section aria-labelledby="components-title" className="component-catalog-page">
@@ -20,8 +20,7 @@ export default function ComponentsPage() {
           <p className="component-catalog-page__eyebrow">Components</p>
           <h1 id="components-title">Components with clear contracts</h1>
           <p>
-            Explore the shared interface primitives currently used by WebCraft, including
-            their intended use, limits, and accessibility considerations.
+            Explore real interface primitives through their states, semantic behavior, and copyable implementation patterns.
           </p>
           <p className="component-catalog-page__count wc-mist" role="status">
             {componentCount} {componentCount === 1 ? "component" : "components"}
@@ -30,9 +29,9 @@ export default function ComponentsPage() {
 
         {componentCount > 0 ? (
           <ul className="component-catalog-grid" role="list">
-            {componentEntries.map((component) => (
-              <li key={component.slug}>
-                <ComponentCard component={component} />
+            {interactiveComponents.map((definition) => (
+              <li key={definition.slug}>
+                <InteractiveComponentCard definition={definition} />
               </li>
             ))}
           </ul>

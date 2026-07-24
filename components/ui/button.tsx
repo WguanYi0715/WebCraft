@@ -1,10 +1,10 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { ComponentPropsWithRef, ReactNode } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "small" | "medium" | "large";
 
 export interface ButtonProps
-  extends Omit<ComponentPropsWithoutRef<"button">, "disabled"> {
+  extends Omit<ComponentPropsWithRef<"button">, "disabled"> {
   children: ReactNode;
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -19,6 +19,7 @@ export function Button({
   size = "medium",
   loading = false,
   disabled = false,
+  ref,
   type = "button",
   ...props
 }: ButtonProps) {
@@ -40,6 +41,7 @@ export function Button({
       aria-disabled={isDisabled || undefined}
       className={classes}
       disabled={isDisabled}
+      ref={ref}
       type={type}
     >
       {loading ? (
